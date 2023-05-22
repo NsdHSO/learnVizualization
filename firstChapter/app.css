@@ -5,3 +5,15 @@ body {
 .canva{
     padding-top: 5rem;
 }
+
+div.tooltip{
+    position: absolute;
+    text-align: left;
+    width: 100px;
+    height: 100px;
+    padding: .2rem;
+    font: 12px Helvetica, sans-serif;
+    background: lightcyan;
+    border: 0px;
+    pointer-events: none;
+}

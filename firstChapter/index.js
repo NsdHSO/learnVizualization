@@ -1,5 +1,10 @@
 const canvas = d3.select('.canva')
 
+const div = d3.select('body')
+    .append('div')
+    .attr('class', 'tooltip')
+    .style('opacity', 0)
+
 d3.json('data.json', function (data) {
 
     let svg = canvas.append('svg')
@@ -53,12 +58,36 @@ d3.json('data.json', function (data) {
         .data(data)
 
 
-
     circle.enter()
         .append('circle')
-        .attr('cx', (data,u)=> Math.floor((Math.random() * 200) +data.rating*u))
-        .attr('cy', data=> Math.floor((Math.random() * 100) +data.rating))
-        .attr('r', data=> data.rating*2)
+        .attr('cx', (data, u, as) => {
+            d3.select(as[u])
+                .on('mouseout', function (d, i,u) {
+                    d3.select(u[i])
+                        .transition()
+                        .duration('50')
+                        .attr('opacity', '1')
+                    div.transition()
+                        .duration(100)
+                        .style('opacity', 0)
+                })
+                .on('mouseover', function (d, i,u) {
+                    d3.select(u[i])
+                        .transition()
+                        .duration('250')
+                        .attr('opacity', '0.9')
+                    div.transition()
+                        .duration(100)
+                        .style('opacity', 0.7)
+                    div.html('<p>' + d.city_name + '</p>')
+                        .style('left', (d3.event.pageX) + 'px')
+                        .style('top', (d3.event.pageY) + 5 + 'px')
+
+                })
+            return Math.floor((Math.random() * 200) + data.rating * u)
+        })
+        .attr('cy', data => Math.floor((Math.random() * 100) + data.rating))
+        .attr('r', data => data.rating * 2)
         .attr('fill', data => data.color)
 })
 
