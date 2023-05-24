@@ -1,0 +1,70 @@
+alias yai="yarn install"
+alias yas="yarn start"
+alias gid="git diff | git-split-diffs --color | less -RFX"
+alias gdd="git add"
+alias gis="git status"
+alias gip="git push"
+alias gic="git cz"
+alias gio="git pull"
+alias gim="git commit -m"
+alias kila="kill -9"
+export mouse=a
+alias gtf="git"
+alias gtt="git"
+alias ghc="git"
+alias y3lok="lock"
+alias y3all="all"
+alias vim="nvim"
+alias lsop="lsof"
+alias gty="git"
+
+function lsop
+    lsof -i :$argv
+
+   echo "lsof -i :$argv"
+end
+
+function y3lok
+    rm -rf yarn.lock;
+    touch yarn.lock;
+    yarn install;
+end
+
+function y3all
+    rm -rf yarn.lock;
+    rm -rf node_module;
+     touch yarn.lock;
+    yarn install;
+end
+
+function gtf
+    git commit -m  "🎸 feat: $argv"
+end
+
+function gtt
+    git commit -m "💍 test: $argv"
+end
+
+function ghc
+    git commit -m "🤖 chore: $argv"
+end
+
+function gty
+    git commit -m "🎯 style: $argv"
+end
+
+function ..
+    cd ..
+end
+
+function ...
+    cd ..;cd ..
+end
+
+function ....
+    cd ..;cd ..; cd ..
+end
+function .....
+    cd ..;cd ..; cd ..; cd ..
+end
+
