@@ -31,3 +31,7 @@ div.tooltip{
        justify-content: center;
    }
    }
+.test{
+    fill:red !important;
+    color: red
+}
