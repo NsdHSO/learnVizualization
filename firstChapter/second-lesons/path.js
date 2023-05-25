@@ -11,18 +11,13 @@ const colors = [
     '#36A2EB',
     '#FFCE56'
 ];
-const outerRadius = 150; // Valoarea outerRadius dorită
+const outerRadius = 50; // Valoarea outerRadius dorită
 const proportieTriunghi = 2; // Raportul de proporție dintre triangleSize și outerRadius
 const proportieOuterRadius = 1; // Raportul de proporție dintre triangleSize și
-const triangleOffsetX = 140; // Ajustează valoarea pentru a schimba poziția pe axa X a triunghiului
-const triangleOffsetY = -40
 const triangleOffset = outerRadius * 0.2; // Ajustează procentul (0.2) pentru a obține poziția dorită
-const fontSize = Math.max(12, outerRadius * 0.03); // Ajustează procentul (0.03) și dimensiunea minimă (12) pentru a obține valorile dorite
-
+const fontSize = Math.max(12, outerRadius * 0.2); // Ajustează procentul (0.03) și dimensiunea minimă (12) pentru a obține valorile dorite
 const triangleRotation = 326; // Ajustează valoarea pentru a schimba rotația triunghiului
-
 const triangleSize = outerRadius * (proportieTriunghi / proportieOuterRadius);
-
 // Create a pie generator
 const pie = d3.pie()
     .value(d => d.value)
@@ -87,7 +82,6 @@ const pieLabels = svg
         return `translate(${offsetX}, ${offsetY}) rotate(${rotation})`;
     });
 
-
 const displayValueLabels = pieLabels
     .append("foreignObject")
     .attr("width", (d) => {
@@ -128,8 +122,14 @@ const economiiDivision = pieLabels.filter((d) => d.data.label === "20%");
 economiiDivision
     .style('min-width', '20rem ')
     .append("foreignObject")
-    .attr("width", "8rem")
-    .attr("height", "18rem")
+    .attr("width", (d) => {
+        const pathLength = arc(d).length;
+        return Math.min(pathLength, 80); // Ajustează valoarea maximă dorită pentru lățimea `foreignObject`
+    })
+    .attr("height", (d) => {
+        const pathLength = arc(d).length;
+        return Math.min(pathLength, 180); // Ajustează valoarea maximă dorită pentru înălțimea `foreignObject`
+    })
     .append('xhtml:div').style('margin-top', '4rem')
     .style("color", "white")
     .transition()
