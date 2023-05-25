@@ -11,6 +11,17 @@ const colors = [
     '#36A2EB',
     '#FFCE56'
 ];
+const outerRadius = 150; // Valoarea outerRadius dorită
+const proportieTriunghi = 2; // Raportul de proporție dintre triangleSize și outerRadius
+const proportieOuterRadius = 1; // Raportul de proporție dintre triangleSize și
+const triangleOffsetX = 140; // Ajustează valoarea pentru a schimba poziția pe axa X a triunghiului
+const triangleOffsetY = -40
+const triangleOffset = outerRadius * 0.2; // Ajustează procentul (0.2) pentru a obține poziția dorită
+const fontSize = Math.max(12, outerRadius * 0.03); // Ajustează procentul (0.03) și dimensiunea minimă (12) pentru a obține valorile dorite
+
+const triangleRotation = 326; // Ajustează valoarea pentru a schimba rotația triunghiului
+
+const triangleSize = outerRadius * (proportieTriunghi / proportieOuterRadius);
 
 // Create a pie generator
 const pie = d3.pie()
@@ -20,7 +31,7 @@ const pie = d3.pie()
 // Define the arc generator
 const arc = d3.arc()
     .innerRadius(0)
-    .outerRadius(150);
+    .outerRadius(outerRadius);
 
 // Create the SVG element
 const svg = d3.select("#chart")
@@ -33,12 +44,11 @@ const slices = svg.selectAll("path")
     .enter()
     .append("path")
     .transition()
-    .delay((d, i) => i * 250)
-    .ease(d3.easeBackIn)
+    .delay((d, i) => i * 550)
+    .ease(d3.easeCircleInOut)
     .attr("d", (d, i) => {
         if (i === 2) {
             const centroid = arc.centroid(d);
-            const triangleSize = 375; // Dimensiunea triunghiului
             const trianglePath = `M ${centroid[0] - triangleSize / 1.2},${centroid[1] - triangleSize / 2} `
                 + `L ${centroid[0] + triangleSize / 1.45},${centroid[1] - triangleSize / 2} `
                 + `L ${centroid[0]},${centroid[1] + triangleSize / 2} Z`;
@@ -49,8 +59,8 @@ const slices = svg.selectAll("path")
     })
     .attr('transform', (d, i) => {
         if (i === 2) {
-            console.log(d);
-            return 'translate(-35, -129) rotate(326)';
+            const centroid = arc.centroid(d);
+            return `translate(${centroid[0] + triangleOffset}, ${centroid[1] - triangleOffset}) rotate(${triangleRotation})`;
         } else {
             return null;
         }
@@ -60,22 +70,34 @@ const slices = svg.selectAll("path")
     .attr("stroke-width", 2);
 
 
-const radius = 150; // Replace 150 with your desired radius value
 
 const labelArc = d3.arc()
-    .innerRadius(radius * 0.5)
-    .outerRadius(radius * 0.8);
-
-const pieLabels = svg.selectAll("g")
+    .innerRadius(outerRadius * 0.5)
+    .outerRadius(outerRadius * 0.8);
+const pieLabels = svg
+    .selectAll("g")
     .data(pie(data))
     .enter()
     .append("g")
-    .attr("transform", (d) => `translate(${labelArc.centroid(d)[0] + 2 * (22)}, ${labelArc.centroid(d)[1] + 2 * (-4)}) rotate(146.5)`);
+    .attr("transform", (d) => {
+        const centroid = labelArc.centroid(d);
+        const offsetX = centroid[0] + 2 * (outerRadius * 0.05);
+        const offsetY = centroid[1] + 2 * (-outerRadius * 0.01);
+        const rotation = 146.5;
+        return `translate(${offsetX}, ${offsetY}) rotate(${rotation})`;
+    });
+
 
 const displayValueLabels = pieLabels
     .append("foreignObject")
-    .attr("width", "8rem")
-    .attr("height", "18rem")
+    .attr("width", (d) => {
+        const pathLength = arc(d).length;
+        return Math.min(pathLength, 80); // Ajustează valoarea maximă dorită pentru lățimea `foreignObject`
+    })
+    .attr("height", (d) => {
+        const pathLength = arc(d).length;
+        return Math.min(pathLength, 180); // Ajustează valoarea maximă dorită pentru înălțimea `foreignObject`
+    })
     .style("max-width", "80px")
     .style("display", "flex")
     .style("flex-direction", "column")
@@ -85,7 +107,7 @@ const displayValueLabels = pieLabels
 const labelDivs = displayValueLabels
     .append("xhtml:div")
     .style("color", "white")
-    .style("font-size", "20px")
+    .style("font-size", `${fontSize}px`)
     .style("display", "flex")
     .style("flex-direction", "column");
 
@@ -96,7 +118,7 @@ labelDivs
 
 labelDivs
     .append("span")
-    .style("font-size", "40px")
+    .style("font-size", `${fontSize}px`)
     .text((d) => d.value + "%");
 
 // Find the division for "Economii" with value "20%"
@@ -113,7 +135,7 @@ economiiDivision
     .transition()
     .delay((d, i) => i * 250)
     .ease(d3.easeBackIn)
-    .style("font-size", "20px")
+    .style("font-size", `${fontSize}px`)
     .style("display", "flex")
     .text('iva')
 // Add a gradient to the "Nevoi Fundamentale" slice
